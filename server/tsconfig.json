@@ -1,17 +1,31 @@
 {
   "compilerOptions": {
-    "types": ["node"],
-    "lib": ["es6"],
-    "target": "es6",
-    "module": "commonjs",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ESNext"
+    ],
+    "target": "ESNext",
+    "module": "NodeNext",
     "rootDir": "./",
     "outDir": "./build",
     "esModuleInterop": true,
     "strict": false,
     "sourceMap": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "inlineSourceMap": true
   },
-  "exclude": [
-    "../node_modules"
-  ]
-}
+    "ts-node": {
+      "esm": true
+    },
+    "exclude": [
+      "../node_modules"
+    ]
+  }

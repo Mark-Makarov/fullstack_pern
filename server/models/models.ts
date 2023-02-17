@@ -1,5 +1,5 @@
-const sequelize = require('../db')
-const {DataTypes} = require('sequelize')
+import sequelize from "../db.js";
+import {DataTypes} from "sequelize";
 
 const User = sequelize.define('user', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -24,12 +24,12 @@ const Device = sequelize.define('device', {
     img: {type: DataTypes.STRING, unique: true, allowNull: false},
 })
 
-const Type = sequelize.define('type', {
+export const Type = sequelize.define('type', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
 })
 
-const Brand = sequelize.define('brand', {
+export const Brand = sequelize.define('brand', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
 })
@@ -77,7 +77,7 @@ DeviceInfo.belongsTo(Device)
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
 
-module.exports = {
+export default {
     User,
     Basket,
     BasketDevice,
