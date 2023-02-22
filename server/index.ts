@@ -11,6 +11,8 @@ import * as http from "http";
 import * as socketIo from "socket.io";
 import {createServer} from "http";
 import {Server} from "socket.io";
+import ss from "socket.io-stream"
+import * as fs from "fs";
 
 
 dotenv.config();
@@ -28,29 +30,43 @@ app.use(fileUpload({}))
 app.use('/api', router)
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, {cors: {
-        origin: ["http://localhost:5000" , "http://169.254.65.250:5000"],
-    }});
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*"
+        // origin: ["http://localhost:5000" , "http://169.254.65.250:5000", "http://192.168.111.198:5000", "http://100.64.100.6:5000", "https://fd1b-89-22-55-100.eu.ngrok.io"],
+    },
+});
 
 io.on("connection", (socket) => {
-    const { id } = socket;
+    const {id} = socket;
     console.log(`Socket connected: ${id}`);
+
+    ss(socket).on("photo-to-all", (stream, data) => {
+        const filename = path.basename(data.name);
+        const file = fs.createWriteStream(filename);
+        stream.pipe(file);
+        socket.broadcast.emit("photo-to-all", data);
+        socket.emit("photo-to-all", data);
+    });
 
     // сообщение себе
     socket.on("message-to-me", (msg) => {
         msg.type = "me";
         socket.emit("message-to-me", msg);
     });
-
+    socket.emit("photo-to-all", (data) => {
+        console.log(data)
+    });
     // сообщение для всех
     socket.on("message-to-all", (msg) => {
+        console.log(msg)
         msg.type = "all";
         socket.broadcast.emit("message-to-all", msg);
         socket.emit("message-to-all", msg);
     });
 
     // работа с комнатами
-    const { roomName } = socket.handshake.query;
+    const {roomName} = socket.handshake.query;
     console.log(`Socket roomName: ${roomName}`);
     socket.join(roomName);
     socket.on("message-to-room", (msg) => {
@@ -92,7 +108,9 @@ const start = async () => {
         await sequelize.authenticate()
         await sequelize.sync()
         // app.listen(PORT, () => console.log(`Сервер стартовал на порту: ${PORT}`))
-        httpServer.listen(PORT, () => {console.log(`Сервер стартовал на порту: ${PORT}`);});
+        httpServer.listen(PORT, () => {
+            console.log(`Сервер стартовал на порту: ${PORT}`);
+        });
     } catch (e) {
         console.log(e)
     }
