@@ -1,9 +1,10 @@
 import React, {useContext} from 'react';
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, Navigate} from 'react-router-dom';
 import {authRoutes, publicRoutes} from '../routes';
 import {Context} from "../main";
 import {observer} from 'mobx-react-lite';
 import NotFound from "../pages/NotFound";
+import {SHOP_ROUTE} from "../utils/consts";
 
 const AppRouter = observer(() => {
 
@@ -18,7 +19,7 @@ const AppRouter = observer(() => {
                 {publicRoutes.map(({path, Component}) => (
                     <Route key={path} path={path} element={<Component/>}/>
                 ))}
-                <Route path="*" element={<NotFound />} />
+                <Route path='*' element={<Navigate to={SHOP_ROUTE}/>} />
             </Routes>
     );
 });

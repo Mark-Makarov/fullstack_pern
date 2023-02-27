@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import HomeIcon from '@mui/icons-material/Home';
 import {Context} from "../main";
 import {observer} from "mobx-react-lite";
+import {useNavigate} from "react-router-dom";
+import {ADMIN_ROUTE, LOGIN_ROUTE} from "../utils/consts";
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -22,6 +24,8 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 const NavBar = observer(() => {
         const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
         const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+        const navigate = useNavigate();
 
         const {user} = useContext(Context);
 
@@ -60,7 +64,7 @@ const NavBar = observer(() => {
                                 textDecoration: 'none',
                             }}
                         >
-                            MAIN PAGE
+                            PERN SHOP
                         </Typography>
 
                         <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
@@ -122,16 +126,16 @@ const NavBar = observer(() => {
                             {user.isAuth ?
                                 <>
                                     <Button
-                                        onClick={handleCloseNavMenu}
+                                        onClick={() => navigate(ADMIN_ROUTE)}
                                         sx={{m: 2, color: 'white', display: 'block'}}
                                     >
                                         Админ панель
                                     </Button>
                                     <Button
-                                        onClick={handleCloseNavMenu}
+                                        onClick={() => navigate(LOGIN_ROUTE)}
                                         sx={{m: 2, color: 'white', display: 'block'}}
                                     >
-                                        Войти
+                                        Выйти
                                     </Button>
                                 </>
                                 : <Button
