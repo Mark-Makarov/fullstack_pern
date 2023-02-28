@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken'
 import {User, Basket} from "../models/models.js";
 import {ApiError} from "../error/ApiError.js";
 
-function generateJwt({user}, {email}, {role}) {
-    console.log(user)
+function generateJwt(user, email, role) {
     return jwt.sign(
         {id: user, email, role},
         process.env.SECRET_KEY,

@@ -15,7 +15,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import {Context} from "../main";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
-import {ADMIN_ROUTE, LOGIN_ROUTE} from "../utils/consts";
+import {ADMIN_ROUTE, LOGIN_ROUTE, SHOP_ROUTE} from "../utils/consts";
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -28,6 +28,12 @@ const NavBar = observer(() => {
         const navigate = useNavigate();
 
         const {user} = useContext(Context);
+
+        const logOut = () => {
+            user.setIsAuth(false)
+            user.setUser({})
+            navigate(LOGIN_ROUTE)
+        }
 
         const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
             setAnchorElNav(event.currentTarget);
@@ -126,20 +132,26 @@ const NavBar = observer(() => {
                             {user.isAuth ?
                                 <>
                                     <Button
+                                        onClick={() => navigate(SHOP_ROUTE)}
+                                        sx={{m: 2, color: 'white', display: 'block'}}
+                                    >
+                                        Магазин
+                                    </Button>
+                                    <Button
                                         onClick={() => navigate(ADMIN_ROUTE)}
                                         sx={{m: 2, color: 'white', display: 'block'}}
                                     >
                                         Админ панель
                                     </Button>
                                     <Button
-                                        onClick={() => navigate(LOGIN_ROUTE)}
+                                        onClick={logOut}
                                         sx={{m: 2, color: 'white', display: 'block'}}
                                     >
                                         Выйти
                                     </Button>
                                 </>
                                 : <Button
-                                    onClick={() => user.setIsAuth(true)}
+                                    onClick={() => navigate(LOGIN_ROUTE)}
                                     sx={{m: 2, color: 'white', display: 'block'}}
                                 >
                                     Авторизация

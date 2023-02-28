@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import {Box, Button, CardActionArea, CardActions, Stack} from '@mui/material';
+import {Box, CardActionArea, Stack} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import {useNavigate} from "react-router-dom";
 
@@ -21,12 +21,12 @@ const DeviceList = observer(() => {
             <Box sx={{m: '0px 0px 0px 166px', height: '100%'}}>
             <Stack sx={{flexDirection: 'row', flexWrap: 'wrap', display: 'flex', justifyContent: 'center'}}>
                 {device.devices.map(device =>
-                    <Card sx={{ maxWidth: 200, maxHeight: 270, m: 1 }} key={device.id} onClick={() => navigate(`/device/${device.id}`)}>
+                    <Card sx={{ maxWidth: 200, maxHeight: 350, m: 1 }} key={device.id} onClick={() => navigate(`/device/${device.id}`)}>
                         <CardActionArea>
                             <CardMedia
                                 component="img"
                                 height="140"
-                                image={device.img}
+                                image={import.meta.env.VITE_REACT_APP_API_URL + device.img}
                             />
                             <CardContent>
                                 <Typography fontSize={20} component="div">

@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import {Box, Button} from "@mui/material";
+import CreateType from "../components/adminPanel/CreateType";
+import CreateBrand from "../components/adminPanel/CreateBrand";
+import CreateDevice from "../components/adminPanel/CreateDevice";
 
 const Admin: React.FC = () => {
 
@@ -18,21 +21,15 @@ const Admin: React.FC = () => {
                 Добавить устройство
             </Button>
         </Box>
-            <Box m={2} sx={{display: 'flex', justifyContent: 'center'}}>
+            <Box mb={1} sx={{display: 'flex', justifyContent: 'center'}}>
             {activeTab === 'newType' &&
-                <Box>
-                  type
-                </Box>
+               <CreateType/>
             }
             {activeTab === 'newBrand' &&
-			        <Box>
-				        brand
-			        </Box>
+                <CreateBrand/>
             }
             {activeTab === 'newDevice' &&
-			        <Box>
-				        device
-			        </Box>
+			        <CreateDevice/>
             }
             </Box>
         </>
