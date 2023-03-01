@@ -6,7 +6,6 @@ import {
     LOGIN_ROUTE,
     REGISTRATION_ROUTE,
     SHOP_ROUTE,
-    TEST_DEVICE_ROUTE
 } from "./utils/consts";
 import Basket from "./pages/Basket";
 import Shop from "./pages/Shop";

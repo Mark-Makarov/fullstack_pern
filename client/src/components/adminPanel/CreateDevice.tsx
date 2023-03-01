@@ -1,10 +1,12 @@
-import React, {ChangeEvent, FC, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, FC, SyntheticEvent, useContext, useEffect, useState} from 'react';
 import Typography from "@mui/material/Typography";
 import {Box, Button, FormControl, InputLabel, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {Context} from "../../main";
 import DeleteIcon from '@mui/icons-material/Delete';
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
+import {createDevice, fetchBrands, fetchTypes} from "../../api/deviceAPI";
+import {observer} from "mobx-react-lite";
 
 interface Description {
     title: string,
@@ -12,23 +14,37 @@ interface Description {
     number: number
 }
 
-const CreateDevice: FC = () => {
+const CreateDevice: FC = observer(() => {
 
     const {device} = useContext(Context)
 
+    useEffect(() => {
+        fetchTypes().then(data => device.setTypes(data))
+        fetchBrands().then(data => device.setBrands(data))
+    }, [])
+
     const [selectedBrand, setSelectedBrand] = useState('')
+    const [selectedInputBrand, setSelectedInputBrand] = useState('')
     const [selectedType, setSelectedType] = useState('')
+    const [selectedInputType, setSelectedInputType] = useState('')
     const [inputDeviceName, setInputDeviceName] = useState('')
     const [inputDevicePrice, setInputDevicePrice] = useState('')
     const [inputFile, setInputFile] = useState('')
     const [descriptionData, setDescriptionData] = useState<Description[]>([])
+    const [showEvent, setShowEvent] = useState(false)
 
     const selectBrandHandler = (event: SelectChangeEvent) => {
-        setSelectedBrand(event.target.value)
+        const selectedBrandName = event.target.value;
+        const selectedBrand = device.brands.find((brand) => brand.name === selectedBrandName);
+        setSelectedBrand(selectedBrand.id);
+        setSelectedInputBrand(selectedBrandName)
     }
 
     const selectTypeHandler = (event: SelectChangeEvent) => {
-        setSelectedType(event.target.value)
+        const selectedTypeName = event.target.value;
+        const selectedBrand = device.types.find((type) => type.name === selectedTypeName);
+        setSelectedType(selectedBrand.id);
+        setSelectedInputType(selectedTypeName)
     }
 
     const inputDeviceNameHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +56,7 @@ const CreateDevice: FC = () => {
     }
 
     const inputFileHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputFile(e.target.value)
+        setInputFile(e.target.files[0])
     }
 
     const addDescription = () => {
@@ -51,6 +67,30 @@ const CreateDevice: FC = () => {
         setDescriptionData(descriptionData.filter(i => i.number !== number))
     }
 
+    const changeDescriptionData = (key, value, number) => {
+        setDescriptionData(descriptionData.map(i => i.number === number ? {...i, [key]: value} : i))
+    }
+
+    const addDevice = () => {
+        const formData = new FormData()
+        formData.append('name', inputDeviceName)
+        formData.append('price', inputDevicePrice)
+        formData.append('img', inputFile)
+        formData.append('brandId', selectedBrand)
+        formData.append('typeId', selectedType)
+        formData.append('info', JSON.stringify(descriptionData))
+        createDevice(formData).then(data => setShowEvent(true))
+
+        setSelectedBrand('')
+        setSelectedInputBrand('')
+        setSelectedType('')
+        setSelectedInputType('')
+        setInputDeviceName('')
+        setInputDevicePrice('')
+        setInputFile('')
+        setDescriptionData([])
+    }
+
     return (
         <Box sx={{flexDirection: 'column', width: '500px'}}>
             <Box sx={{display: 'flex', flexDirection: 'column'}}>
@@ -58,8 +98,8 @@ const CreateDevice: FC = () => {
                     Добавить новый девайс
                 </Typography>
                 <FormControl fullWidth sx={{mt: 2, width: '100%'}}>
-                    <InputLabel>Выберите бренд</InputLabel>
-                    <Select label="Выберите бренд" value={selectedBrand} onChange={selectBrandHandler}>
+                    <InputLabel>{selectedInputBrand || 'Выберите бренд'}</InputLabel>
+                    <Select label={selectedInputBrand || 'Выберите бренд'} value={selectedInputBrand} onChange={selectBrandHandler}>
                         {device.brands.map((brand) => (
                             <MenuItem value={brand.name} key={brand.id}>
                                 {brand.name}
@@ -68,8 +108,8 @@ const CreateDevice: FC = () => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth sx={{mt: 2, width: '100%'}}>
-                    <InputLabel>Выберите тип</InputLabel>
-                    <Select label="Выберите бренд" value={selectedType} onChange={selectTypeHandler}>
+                    <InputLabel>{selectedInputType || 'Выберите тип'}</InputLabel>
+                    <Select label={selectedInputType || 'Выберите тип'} value={selectedInputType} onChange={selectTypeHandler}>
                         {device.types.map((type) => (
                             <MenuItem value={type.name} key={type.id}>
                                 {type.name}
@@ -94,7 +134,6 @@ const CreateDevice: FC = () => {
                 <TextField
                     type={'file'}
                     sx={{width: '100%', my: 1}}
-                    value={inputFile}
                     onChange={inputFileHandler}
                 />
             </Box>
@@ -106,13 +145,15 @@ const CreateDevice: FC = () => {
                     <Box my={1} sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}
                          key={descriptionData.number}>
                         <TextField
-                            type={'text'}
-                            label={'Название характеристики...'}
+                            value={descriptionData.title}
+                            onChange={(e) => changeDescriptionData('title', e.target.value, descriptionData.number)}
+                            label={'Название хар-ки...'}
                             sx={{m: 1, width: '200px'}}
                         />
                         <TextField
-                            type={'text'}
-                            label={'Описание характеристики...'}
+                            value={descriptionData.description}
+                            onChange={(e) => changeDescriptionData('description', e.target.value, descriptionData.number)}
+                            label={'Описание хар-ки...'}
                             sx={{m: 1, width: '200px'}}
                         />
                         <IconButton sx={{width: 50, height: 50}}
@@ -122,7 +163,7 @@ const CreateDevice: FC = () => {
                     </Box>
                 )}
             </Box>
-            <Button fullWidth variant={'contained'} sx={{
+            <Button fullWidth variant={'contained'} onClick={addDevice} sx={{
                 backgroundColor: 'rgb(0%, 50%, 0%, 0.9);',
                 '&:hover': {
                     backgroundColor: 'rgb(0%, 50%, 0%, 0.7);'
@@ -130,8 +171,11 @@ const CreateDevice: FC = () => {
             }}>
                 Добавить
             </Button>
+            {showEvent && <Typography fontSize={20} sx={{textAlign: 'center', mt: 2, color: 'green'}}>
+			        Бренд успешно добавлен!
+		        </Typography>}
         </Box>
     );
-};
+});
 
 export default CreateDevice;

@@ -5,22 +5,28 @@ import {observer} from 'mobx-react-lite';
 import AppRouter from "./components/AppRouter";
 import NavBar from "./components/NavBar";
 import {check} from "./api/userAPI";
+import {Box, CircularProgress} from "@mui/material";
 
 const App = observer(() => {
 
     const {user} = useContext(Context)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-    check().then(data => {
-        user.setIsAuth(true)
-    }).finally(() => setLoading(false))
+        check().then(data => {
+            user.setIsAuth(true)
+        }).finally(() => setLoading(false))
     }, [])
 
     return (
         <BrowserRouter>
-            <NavBar/>
-            <AppRouter/>
+            {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <CircularProgress size={100}/>
+                </Box>
+                : <>
+                    <NavBar/>
+                    <AppRouter/>
+                </>}
         </BrowserRouter>
     );
 });

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import {User, Basket} from "../models/models.js";
 import {ApiError} from "../error/ApiError.js";
 
-function generateJwt(user, email, role) {
+function generateJwt({user, email, role}) {
     return jwt.sign(
         {id: user, email, role},
         process.env.SECRET_KEY,
@@ -12,7 +12,6 @@ function generateJwt(user, email, role) {
 
 async function registration(req, res, next) {
     const {email, password, role} = req.body
-    console.log(email, password)
     if (!email || !password) {
         return next(ApiError.badRequest('Некорректные данные'))
     }
@@ -23,7 +22,7 @@ async function registration(req, res, next) {
     const hashPassword = await bcrypt.hash(password, 5)
     const user = await User.create({email, role, password: hashPassword})
     const basket = await Basket.create({userId: user.get('id')})
-    const token = generateJwt({user: user.get('id')}, {email: user.get('email')}, {role: user.get('role')})
+    const token = generateJwt({user: user.get('id'), email: user.get('email'), role: user.get('role')})
     return res.json(token)
 }
 
@@ -37,12 +36,12 @@ async function login(req, res, next) {
     if (!comparePassword) {
         return next(ApiError.internal('Пароль неверен'))
     }
-    const token = generateJwt({user: user.get('id')}, {email: user.get('email')}, {role: user.get('role')})
+    const token = generateJwt({user: user.get('id'), email: user.get('email'), role: user.get('role')})
     return res.json(token)
 }
 
 async function check(req, res, next) {
-    const token = generateJwt(req.user.id, req.user.email, req.user.role)
+    const token = generateJwt({user: req.user.id, email: req.user.email, role: req.user.role})
     return res.json({token})
 }
 

@@ -16,7 +16,7 @@ const BrandBar = observer(() => {
 
     return (
         <Box sx={{m: '16px 16px 0px 166px', display: 'flex', justifyContent: 'center'}}>
-            <List dense sx={{bgcolor: 'background.paper', m: 1, flexDirection: 'row', display: 'flex'}}>
+            <List dense sx={{m: 1, flexDirection: 'row', display: 'flex'}}>
                 {device.brands.map(brands =>
                     <ListItem
                         key={brands.id}

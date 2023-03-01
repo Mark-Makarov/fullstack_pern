@@ -1,11 +1,10 @@
 import React, {useContext, useState} from 'react';
-import {Box, Button, Stack, TextField, Typography} from "@mui/material";
+import {Button, Stack, TextField, Typography} from "@mui/material";
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
-import {useLocation, useNavigate} from "react-router-dom";
-import {LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE} from "../utils/consts";
+import {useNavigate} from "react-router-dom";
+import {SHOP_ROUTE} from "../utils/consts";
 import {login, registration} from "../api/userAPI";
-import jwtDecode from "jwt-decode";
 import {observer} from "mobx-react-lite";
 import {Context} from "../main";
 
@@ -13,6 +12,7 @@ const Auth = observer(() => {
         const {user} = useContext(Context)
         const [inputLogin, setInputLogin] = useState('')
         const [inputPass, setInputPass] = useState('')
+        const [errorText, setErrorText] = useState('')
 
 
         const handleChangeInputLogin = (e) => {
@@ -23,29 +23,24 @@ const Auth = observer(() => {
             setInputPass(e.target.value)
         }
 
-        const location = useLocation()
         const navigate = useNavigate()
 
-        // const login = () => {
-        //     navigate(LOGIN_ROUTE)
-        // }
-        //
-        // const registration = () => {
-        //     navigate(REGISTRATION_ROUTE)
-        // }
-
-        const signIn = async () => {
-            const res = await login(inputLogin, inputPass)
-            user.setUser(res)
-            user.setIsAuth(true)
-            navigate(SHOP_ROUTE)
-        }
-
-        const singUP = async () => {
-            const res = await registration(inputLogin, inputPass)
-            user.setUser(res)
-            user.setIsAuth(true)
-            navigate(SHOP_ROUTE)
+        const authHandler = async (args: string) => {
+            if (inputPass && inputLogin) {
+                try {
+                    const res = args === 'login' ? await login({
+                        email: inputLogin,
+                        password: inputPass
+                    }) : await registration({email: inputLogin, password: inputPass})
+                    user.setUser(res)
+                    user.setIsAuth(true)
+                    navigate(SHOP_ROUTE)
+                } catch (e: any) {
+                    setErrorText(e.response.data.message)
+                }
+            } else {
+                setErrorText('Заполните поля')
+            }
         }
 
         return (
@@ -56,14 +51,16 @@ const Auth = observer(() => {
                            variant="outlined" onChange={e => handleChangeInputLogin(e)}/>
                 <TextField label="Пароль" value={inputPass}
                            variant="outlined" onChange={e => handleChangeInputPass(e)}/>
-                <Button variant="contained" sx={{color: "secondary.contrastText"}} onClick={signIn}>
+                <Button variant="contained" sx={{color: "secondary.contrastText"}} onClick={() => authHandler('login')}>
                     <Typography pr={1} sx={{fontSize: 15}}>Войти</Typography>
                     <LoginIcon/>
                 </Button>
-                <Button variant="contained" sx={{color: "secondary.contrastText"}} onClick={singUP}>
+                <Button variant="contained" sx={{color: "secondary.contrastText"}}
+                        onClick={() => authHandler('registration')}>
                     <Typography pr={1} sx={{fontSize: 15}}>Зарегистрироваться</Typography>
                     <AddIcon/>
                 </Button>
+                {errorText !== '' && <Typography mt={2} sx={{fontSize: 20, color: 'red'}}>{errorText}!</Typography>}
             </Stack>
         )
     }

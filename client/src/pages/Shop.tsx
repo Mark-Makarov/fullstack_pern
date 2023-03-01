@@ -14,8 +14,20 @@ const Shop: FC = observer(() => {
     useEffect(() => {
         fetchTypes().then(data => device.setTypes(data))
         fetchBrands().then(data => device.setBrands(data))
-        fetchDevices().then(data => device.setDevices(data.rows))
+
     }, [])
+
+    useEffect(() => {
+        fetchDevices({
+            typeId: device.selectedType.id,
+            brandId: device.selectedBrand.id,
+            page: device.page,
+            limit: 8
+        }).then(data => {
+            device.setDevices(data.rows)
+            device.setTotalCount(data.count)
+        })
+    }, [device.page, device.selectedType, device.selectedBrand])
 
     return (
         <Box m={2} alignItems={'center'}>

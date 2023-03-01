@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import {Box, CardActionArea, Stack} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import {useNavigate} from "react-router-dom";
+import Pages from "./Pages";
 
 const DeviceList = observer(() => {
 
@@ -21,7 +22,7 @@ const DeviceList = observer(() => {
             <Box sx={{m: '0px 0px 0px 166px', height: '100%'}}>
             <Stack sx={{flexDirection: 'row', flexWrap: 'wrap', display: 'flex', justifyContent: 'center'}}>
                 {device.devices.map(device =>
-                    <Card sx={{ maxWidth: 200, maxHeight: 350, m: 1 }} key={device.id} onClick={() => navigate(`/device/${device.id}`)}>
+                    <Card sx={{ width: 200, maxHeight: 350, m: 1 }} key={device.id} onClick={() => navigate(`/device/${device.id}`)}>
                         <CardActionArea>
                             <CardMedia
                                 component="img"
@@ -44,6 +45,9 @@ const DeviceList = observer(() => {
                     </Card>
                 )}
             </Stack>
+                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%', mt: 2}}>
+                    <Pages/>
+                </Box>
             </Box>
         );
     }

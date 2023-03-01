@@ -11,8 +11,13 @@ export const fetchTypes = async () => {
     return data
 }
 
-export const createBrand = async (brand: string) => {
+interface CreateBrandParams {
+    name: string
+}
+
+export const createBrand = async (brand: CreateBrandParams) => {
     const {data} = await $authHost.post('api/brand', brand)
+    console.log(brand)
     return data
 }
 
@@ -21,7 +26,7 @@ export const fetchBrands = async () => {
     return data
 }
 
-export const createDevice = async (device: string) => {
+export const createDevice = async (device: object) => {
     const {data} = await $authHost.post('api/device', device)
     return data
 }
@@ -33,14 +38,14 @@ type FetchDeviceParams = {
     limit: number
 }
 
-export const fetchDevices = async ({typeId, brandId, page, limit = 5} : FetchDeviceParams) => {
+export const fetchDevices = async ({typeId, brandId, page, limit} : FetchDeviceParams) => {
     const {data} = await $host.get('api/device', {params: {
             typeId, brandId, page, limit
         }})
     return data
 }
 
-export const fetchOneDevice = async (id: string) => {
+export const fetchOneDevice = async (id: string | undefined) => {
     const {data} = await $host.get('api/device/' + id)
     return data
 }
